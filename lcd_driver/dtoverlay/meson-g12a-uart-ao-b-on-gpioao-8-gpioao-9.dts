@@ -1,0 +1,28 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "radxa,zero", "amlogic,g12a";
+
+	fragment@0 {
+		target = <&uart_AO_B>;
+		__overlay__ {
+			status = "okay";
+			pinctrl-0 = <&uart_ao_b_tx_8_rx_9_pins>;
+			pinctrl-names = "default";
+		};
+    };
+	fragment@1 {
+		target = <&ao_pinctrl>;
+		__overlay__ {
+			uart_ao_b_tx_8_rx_9_pins: uart-ao-b-tx-8-rx-9 {
+				mux {
+					groups = "uart_ao_b_tx_8",
+					"uart_ao_b_rx_9";
+					function = "uart_ao_b";
+					bias-disable;
+				};
+			};
+		};
+	};
+};

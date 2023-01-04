@@ -1,0 +1,89 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+        compatible = "radxa,zero", "amlogic,g12a";
+
+        fragment@0 {
+                target-path = "/";
+                target = <&spicc0>;
+//                target = <&spicc1>;
+                __overlay__ {
+//                        spi1_gpio {
+//                            compatible = "spi-gpio";
+                            #address-cells = <1>;
+                            #size-cells = <0>;
+                            pinctrl-0 = <&spicc0_x_pins &spicc0_ss0_x_pins>;
+//                            pinctrl-0 = <&spicc1_pins &spicc1_ss0_pins>;
+                            pinctrl-names = "default";
+//                            gpio-sck = <&gpio 76 0>;
+//                            gpio-mosi = <&gpio 73 0>;
+//                            gpio-miso = <&gpio 74 0>;
+//                            cs-gpios = <&gpio 75 0>;
+//                                gpio-sck = <&gpio 23 0>;
+//                                gpio-mosi = <&gpio 20 0>;
+//                                gpio-miso = <&gpio 21 0>;
+//                                cs-gpios = <&gpio 22 0>;
+                            num-chipselects = <1>;
+                            status = "okay";
+                            ili9486@0 {
+                                    reg = <0>;
+                                    compatible = "quandong,qd40037c1-00";
+                                    spi-max-frequency = <30000000>;
+                                    rotation = <270>;
+                                    reset-gpios = <&gpio_ao 2 0>;
+                                    dc-gpios    = <&gpio_ao 3 0>;
+                                    backlight = <&backlight>;
+                                };
+
+ //                       };
+                };
+        };
+        fragment@1 {
+                target-path = "/soc";
+                __overlay__ {
+                        backlight: backlight {
+                        compatible = "gpio-backlight";
+                        gpios = <&gpio_ao 11 0>;
+                        };
+                };
+        };
+        fragment@2 {
+                target-path = "/";
+                __overlay__ {
+                        spi1_gpio {
+                                compatible = "spi-gpio";
+//                                pinctrl-0 = <&spicc0_x_pins &spicc0_ss0_x_pins>;
+                                pinctrl-0 = <&spicc1_pins &spicc1_ss0_pins>;
+                                pinctrl-names = "default";
+                                status = "okay";
+//                                gpio-sck = <&gpio 76 0>;
+//                                gpio-mosi = <&gpio 73 0>;
+//                                gpio-miso = <&gpio 74 0>;
+//                                cs-gpios = <&gpio 75 0>;
+                                gpio-sck = <&gpio 23 0>;
+                                gpio-mosi = <&gpio 20 0>;
+                                gpio-miso = <&gpio 21 0>;
+                                cs-gpios = <&gpio 22 0>;
+                                num-chipselects = <1>;
+                                #address-cells = <0x1>;
+                                #size-cells = <0>;
+                                touch@0 {
+                                        compatible = "ti,ads7846";
+                                        reg = <0>;
+                                        spi-max-frequency = <2000000>;
+                                        interrupt-parent = <&gpio_intc>;
+                                        interrupts = <4 2>;
+                                        pendown-gpio = <&gpio_ao 4 0>;
+					pendown-gpio-debounce = <0>;
+//                                        ti,x-plate-ohms = /bits/ 16 <285>;
+//                                        ti,pressure-max = /bits/ 16 <255>;
+				ti,x-plate-ohms = [00 14];
+				ti,pressure-max = [00 ff];
+                                ti,debounce-max = <2>;                                
+                                wakeup-source;
+                               };
+                        };
+                };
+        };
+};
