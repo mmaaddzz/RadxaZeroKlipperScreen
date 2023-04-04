@@ -20,7 +20,17 @@
 #include <drm/drm_atomic_helper.h>
 #include <drm/drm_drv.h>
 #include <drm/drm_fb_helper.h>
-#include <drm/drm_gem_cma_helper.h>
+#if __has_include (<drm/drm_fbdev_generic.h>)
+ #include <drm/drm_fbdev_generic.h>
+#endif
+#include <drm/drm_gem_atomic_helper.h>
+#if __has_include (<drm/drm_gem_dma_helper.h>)
+ #include <drm/drm_gem_dma_helper.h>
+#else
+ #include <drm/drm_gem_cma_helper.h>
+ #define DEFINE_DRM_GEM_DMA_FOPS     DEFINE_DRM_GEM_CMA_FOPS
+ #define DRM_GEM_DMA_DRIVER_OPS_VMAP DRM_GEM_CMA_DRIVER_OPS_VMAP
+#endif
 #include <drm/drm_gem_framebuffer_helper.h>
 #include <drm/drm_managed.h>
 #include <drm/drm_mipi_dbi.h>
@@ -173,12 +183,12 @@ static const struct st7796_cfg qd40037c1_00_cfg = {
 	.write_only	= true,
 };
 
-DEFINE_DRM_GEM_CMA_FOPS(st7796_fops);
+DEFINE_DRM_GEM_DMA_FOPS(st7796_fops);
 
 static struct drm_driver st7796_driver = {
 	.driver_features	= DRIVER_GEM | DRIVER_MODESET | DRIVER_ATOMIC,
 	.fops			= &st7796_fops,
-	DRM_GEM_CMA_DRIVER_OPS_VMAP,
+	DRM_GEM_DMA_DRIVER_OPS_VMAP,
 	.debugfs_init		= mipi_dbi_debugfs_init,
 	.name			= "st7796",
 	.desc			= "Sitronix ST7796",
